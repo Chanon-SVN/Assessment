@@ -16,13 +16,39 @@ import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
-const testData = [
-  {id:"24234", img_url:"https://avatars0.githubusercontent.com/u/810438?v=4", name:"Dan Abramov", industry:"IT", email:"dan_abramov@gmail.com", phone:"021234567" },
-  {id:"53435", img_url:"https://avatars2.githubusercontent.com/u/6820?v=4",  name:"Sophie Alpert", industry:"IT", email:"sophie@gmail.com", phone:"0823857839" },
-  {id:"02348", img_url:"https://avatars2.githubusercontent.com/u/63648?v=4", name:"Sebastian Markage", industry:"IT", email:"Sebastian_markage@gmail.com", phone:"0832462833" }
-]
-
 class Search extends React.Component {
+  constructor(props) {
+    super(props); 
+
+    this.state = {
+      query:'',
+      results:'',
+      loading:false,
+      message:''
+    }
+  }
+
+    handleOnInputChange = (event) => {
+      const query = event.target.value;
+
+      if(!query){
+        console.log('change');
+        //axios get all
+        let mock = [
+          {id:"24234", img_url:"https://avatars0.githubusercontent.com/u/810438?v=4", name:"Dan Abramov", industry:"IT", email:"dan_abramov@gmail.com", phone:"021234568" },
+          {id:"53435", img_url:"https://avatars2.githubusercontent.com/u/6820?v=4",  name:"Sophie Alpert", industry:"IT", email:"sophie@gmail.com", phone:"0823857839" },
+          {id:"02348", img_url:"https://avatars2.githubusercontent.com/u/63648?v=4", name:"Sebastian Markage", industry:"IT", email:"Sebastian_markage@gmail.com", phone:"0832462833" }
+        ];
+        this.props.onChange(mock);
+      }else{
+        //const search url = 'https://q={query}'
+        // axios get res
+        //this.prop.onChange(res);
+        let mock = [{id:"2222", img_url:"https://avatars0.githubusercontent.com/u/810438?v=4", name:"Dan Abramov", industry:"IT", email:"dan_abramov@gmail.com", phone:"021234567" }]
+        this.props.onChange(mock);
+      };
+    }
+
   render() {
     return (
       <InputGroup className="mb-3">
@@ -32,6 +58,7 @@ class Search extends React.Component {
         <FormControl
           aria-label="Search"
           aria-describedby="inputGroup-search"
+          onChange={this.handleOnInputChange}
         />
         </InputGroup>
     );
@@ -64,6 +91,7 @@ class AddPartner extends React.Component {
     //const res = await axios.post(''); 
     //this.props.onSubmit(res.data);
    const mock = {id:"2222", img_url:"https://avatars0.githubusercontent.com/u/810438?v=4", name:"Dan Abramov", industry:"IT", email:"dan_abramov@gmail.com", phone:"021234567" }
+    this.setState({show:false})
     this.props.onSubmit(mock);
   };
   render() {
@@ -194,6 +222,11 @@ class App extends React.Component {
     }))
   }
 
+  search = (res) => {
+    this.setState({profiles:res})
+    console.log(this.state.profiles);
+  }
+
   render() {
     return (
       <div>
@@ -206,7 +239,7 @@ class App extends React.Component {
                   <h3>Partners</h3>
                 </Col>
                 <Col>
-                  <Search />
+                  <Search onChange={this.search}/>
                 </Col>
               </Row>
               <PartnerTable profiles={this.state.profiles}/>
