@@ -45,8 +45,9 @@ class AddPartner extends React.Component {
     this.handleShow = this.handleShow.bind(this)
     this.handleClsoe = this.handleClose.bind(this)
 
-    this.state = {show:false}
+    this.state = { show_modal:'false', name : '', industry : '', email : '', phone_number : '', img_url:''}
   }
+
 
   handleShow = () => {
     this.setState({show:true})
@@ -55,6 +56,16 @@ class AddPartner extends React.Component {
   handleClose = () => {
     this.setState({show:false})
   }
+
+  handleSubmit = (event) => {
+    event.preventDefault();
+
+    //POST Method return res
+    //const res = await axios.post(''); 
+    //this.props.onSubmit(res.data);
+   const mock = {id:"2222", img_url:"https://avatars0.githubusercontent.com/u/810438?v=4", name:"Dan Abramov", industry:"IT", email:"dan_abramov@gmail.com", phone:"021234567" }
+    this.props.onSubmit(mock);
+  };
   render() {
       return (
         <div>
@@ -78,22 +89,22 @@ class AddPartner extends React.Component {
 
                 <Form.Group controlId="industry">
                   <Form.Label>Industry</Form.Label>
-                  <Form.Control type="text" placeholder="Please enter an industry" required/>
+                  <Form.Control value={this.state.industry} onChange={event => this.setState({industry:event.target.value})} type="text" placeholder="Please enter an industry" required/>
                 </Form.Group>
                 <Form.Group controlId="email">
                   <Form.Label>Email</Form.Label>
-                  <Form.Control type="email" placeholder="Please enter an email" required/>
+                  <Form.Control value={this.state.email} onChange={event => this.setState({email:event.target.value})}  type="email" placeholder="Please enter an email" required/>
                   <Form.Text className="text-muted">
                     we'll never share your email with anyone else.
                   </Form.Text>
                 </Form.Group>
-                <Form.Group controlId="number">
+                <Form.Group controlId="phone_number">
                   <Form.Label>Phone Number</Form.Label>
-                  <Form.Control type="text" placeholder="Please enter a phone number" required/>
+                  <Form.Control value={this.state.phone_number} onChange={event => this.setState({phone_number:event.target.value})} type="text" placeholder="Please enter a phone number" required/>
                 </Form.Group>
                 <Form.Group controlId="img_url">
                   <Form.Label>Image Url</Form.Label>
-                  <Form.Control type="text" placeholder="Please enter an image url" required/>
+                  <Form.Control value={this.state.img_url} onChange={event => this.setState({img_url:event.target.value})} type="text" placeholder="Please enter an image url" required/>
                 </Form.Group>
               </Form>
             </Modal.Body>
@@ -113,12 +124,11 @@ class AddPartner extends React.Component {
 }
 
 class PartnerNavbar extends React.Component {
-  state = {name:'', industry:''}
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    console.log(this.sate.name);
+  extendHandleSubmit = (profileData) => {
+    this.props.onSubmit(profileData)
   }
+
   render() {
 
     return (
@@ -129,7 +139,7 @@ class PartnerNavbar extends React.Component {
           <Nav className="mr-auto">
             <Nav.Link href="#home">Home</Nav.Link>
           </Nav>
-          <AddPartner />
+          <AddPartner onSubmit={this.extendHandleSubmit}/>
 
         </Navbar.Collapse>
         </Navbar>
@@ -155,10 +165,7 @@ class DataTable extends React.Component {
   }
 }
 
-class PartnerTable extends React.Component {
-  render() {
-
-    return (
+const PartnerTable = (props) => (
       <Table striped bordered hover>
         <thead>
           <tr>
@@ -169,34 +176,46 @@ class PartnerTable extends React.Component {
             <th className="text-center">Phone Number</th>
           </tr>
         </thead>
-        {testData.map(profile => <DataTable key={profile.id} {...profile}/>)}
+        {props.profiles.map(profile => <DataTable key={profile.id} {...profile}/>)}
       </Table>
+);
+
+class App extends React.Component {
+
+  state = { profiles:[
+  {id:"24234", img_url:"https://avatars0.githubusercontent.com/u/810438?v=4", name:"Dan Abramov", industry:"IT", email:"dan_abramov@gmail.com", phone:"021234568" },
+  {id:"53435", img_url:"https://avatars2.githubusercontent.com/u/6820?v=4",  name:"Sophie Alpert", industry:"IT", email:"sophie@gmail.com", phone:"0823857839" },
+  {id:"02348", img_url:"https://avatars2.githubusercontent.com/u/63648?v=4", name:"Sebastian Markage", industry:"IT", email:"Sebastian_markage@gmail.com", phone:"0832462833" }
+  ]};
+
+  addNewProfile = (profileData) => {
+    this.setState(prevState => ({
+      profiles: [...prevState.profiles, profileData],
+    }))
+  }
+
+  render() {
+    return (
+      <div>
+        <PartnerNavbar onSubmit={this.addNewProfile} />
+        <Container>
+          <Row style={{marginTop:60}}>
+            <Col>
+              <Row>
+                <Col>
+                  <h3>Partners</h3>
+                </Col>
+                <Col>
+                  <Search />
+                </Col>
+              </Row>
+              <PartnerTable profiles={this.state.profiles}/>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     );
   }
-}
-
-
-function App() {
-  return (
-    <div>
-      <PartnerNavbar />
-      <Container>
-        <Row style={{marginTop:60}}>
-          <Col>
-            <Row>
-              <Col>
-                <h3>Partners</h3>
-              </Col>
-              <Col>
-                <Search />
-              </Col>
-            </Row>
-            <PartnerTable />
-          </Col>
-        </Row>
-      </Container>
-    </div>
-  );
 }
 
 export default App;
